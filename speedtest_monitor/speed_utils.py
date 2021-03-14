@@ -7,7 +7,7 @@ import pytz
 import pandas as pd
 
 import speedtest
-from plot import plot_functions
+from .plot import plot_functions
 
 PathLike = typing.Union[str, bytes, os.PathLike]
 

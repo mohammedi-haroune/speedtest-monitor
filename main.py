@@ -1,7 +1,7 @@
 #! /home/mohammedi/workspace/speedtest/venv/bin/python
 from pathlib import Path
 
-from speed_utils import (
+from speedtest_monitor.speed_utils import (
     measure,
     parse_speed,
     print_speed,

@@ -8,7 +8,7 @@ import pandas as pd
 import pytz
 from matplotlib.ticker import IndexLocator
 
-from time_utils import group_by
+from .time_utils import group_by
 
 DZ = pytz.timezone('Africa/Algiers')
 
@@ -56,9 +56,13 @@ def plot_download(
     return fig, ax
 
 
-def plot_all(df: pd.DataFrame, directory):
-    all_min = group_by(df, scope='1-day', agg='min')
-    all_max = group_by(df, scope='1-day', agg='max')
+def plot_all(
+    df: pd.DataFrame,
+    directory,
+    scope='1-day',
+):
+    all_min = group_by(df, scope=scope, agg='min')
+    all_max = group_by(df, scope=scope, agg='max')
 
     duration = df.timestamp.max() - df.timestamp.min()
     number_of_days = duration.days
@@ -72,7 +76,8 @@ def plot_all(df: pd.DataFrame, directory):
 
     save_to = os.path.join(directory, 'all.png')
 
-    xlabel = 'Time (Aggregated by 4 hours)'
+    aggregated_by = scope.replace('-', ' ')
+    xlabel = f'Time (Aggregated by {aggregated_by})'
 
     plot_download(
         # minor=hours,
@@ -84,12 +89,16 @@ def plot_all(df: pd.DataFrame, directory):
     )
 
 
-def plot_last_10_days(df: pd.DataFrame, directory):
+def plot_last_10_days(
+    df: pd.DataFrame,
+    directory,
+    scope='4-hours',
+):
     now = datetime.now(tz=DZ)
     aday = timedelta(days=10)
     last_10_days = df[df.timestamp.map(lambda t: now - t <= aday)]
-    last_10_days_min = group_by(last_10_days, scope='4-hours', agg='min')
-    last_10_days_max = group_by(last_10_days, scope='4-hours', agg='max')
+    last_10_days_min = group_by(last_10_days, scope=scope, agg='min')
+    last_10_days_max = group_by(last_10_days, scope=scope, agg='max')
 
     days = mdates.DayLocator()
     hours = mdates.HourLocator(interval=4)
@@ -97,7 +106,8 @@ def plot_last_10_days(df: pd.DataFrame, directory):
 
     save_to = os.path.join(directory, 'last_10_days.png')
 
-    xlabel = 'Time (Aggregated by 4 hours)'
+    aggregated_by = scope.replace('-', ' ')
+    xlabel = f'Time (Aggregated by {aggregated_by})'
 
     plot_download(
         minor=hours,
@@ -109,13 +119,17 @@ def plot_last_10_days(df: pd.DataFrame, directory):
     )
 
 
-def plot_today(df: pd.DataFrame, directory):
+def plot_today(
+    df: pd.DataFrame,
+    directory,
+    scope='1-hour',
+):
     now = datetime.now(tz=DZ)
     aday = timedelta(days=1)
     today = df[df.timestamp.map(lambda t: now - t <= aday)]
 
-    today_min = group_by(today, scope='15-minutes', agg='min')
-    today_max = group_by(today, scope='15-minutes', agg='max')
+    today_min = group_by(today, scope=scope, agg='min')
+    today_max = group_by(today, scope=scope, agg='max')
 
     hours_major = mdates.HourLocator(interval=4)
     hours_minor = mdates.HourLocator()
@@ -123,7 +137,8 @@ def plot_today(df: pd.DataFrame, directory):
 
     save_to = os.path.join(directory, 'today.png')
 
-    xlabel = 'Time (Aggregated by 15 minutes)'
+    aggregated_by = scope.replace('-', ' ')
+    xlabel = f'Time (Aggregated by {aggregated_by})'
 
     return plot_download(
         minor=hours_minor,
