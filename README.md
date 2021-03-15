@@ -7,7 +7,7 @@ Monitor your speed test automatically using speedtest.net
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install speedtest_monitor.
 
 ```bash
-pip install speedtest_monitor
+pip install speedtest-monitor
 ```
 
 
