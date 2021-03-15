@@ -107,7 +107,7 @@ def save_speed_graphs(csv_path, directory):
 def install_cron(args='', minutes=15):
     cron = CronTab(user=True)
 
-    script_name = 'speedtest-measure'
+    script_name = 'speedtest-monitor'
 
     jobs = cron.find_command(script_name)
     jobs = list(jobs)
@@ -118,6 +118,6 @@ def install_cron(args='', minutes=15):
 
     job = cron.new(command=f'{script_name} {args}')
     job.minute.every(minutes)
-    print('Crontab installed')
+    print('Crontab installed successfully')
     cron.write()
     return True
