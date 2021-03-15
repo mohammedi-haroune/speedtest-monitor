@@ -5,6 +5,7 @@ from textwrap import dedent
 
 import pytz
 import pandas as pd
+from crontab import CronTab
 
 import speedtest
 from .plot import plot_functions
@@ -70,13 +71,23 @@ def save_speed_csv(speed_dict: dict, path: PathLike, fields: list = None) -> dic
 
 
 def print_speed(speed_dict: dict):
-    mbps = round(speed_dict['download'] / 10e5, 2)
+    output = ''
+
+    download = round(speed_dict['download'] / 10e5, 2)
+    if download:
+        output = output + f'Download : {download:5.2f} Mbps\n'
+
+    upload = round(speed_dict['upload'] / 10e5, 2)
+    if upload:
+        output = output + f'Upload   : {upload:5.2f} Mbps\n'
+
     ping = int(speed_dict['ping'])
-    format = dedent(f'''
-    Download : {mbps:5.2f} Mbps
-    Latency  : {ping:5d} ms
-    ''').strip()
-    print(format.format(mbps=mbps))
+    if ping:
+        output = output + f'Latency  : {ping:5d} ms\n'
+
+    output = output.strip()
+
+    print(output)
 
 
 def preprocess(df: pd.DataFrame) -> pd.DataFrame:
@@ -91,3 +102,22 @@ def save_speed_graphs(csv_path, directory):
     df = preprocess(df)
     for plot in plot_functions:
         plot(df, directory)
+
+
+def install_cron(args='', minutes=15):
+    cron = CronTab(user=True)
+
+    script_name = 'speedtest-measure'
+
+    jobs = cron.find_command(script_name)
+    jobs = list(jobs)
+    if jobs:
+        jobs = [str(job) for job in jobs]
+        print(f'Already installed cron {jobs}')
+        return False
+
+    job = cron.new(command=f'{script_name} {args}')
+    job.minute.every(minutes)
+    print('Crontab installed')
+    cron.write()
+    return True

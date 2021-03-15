@@ -3,3 +3,4 @@ matplotlib~=3.3.4
 numpy~=1.20.1
 speedtest-cli~=2.1.2
 PyQt5~=5.15.2
+python-crontab~=2.5.1
